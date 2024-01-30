@@ -1,0 +1,9 @@
+name: 'laravel-app'
+type: 'php:7.4'
+disk: 2048
+hooks:
+  build: |
+    set -e
+    cp .env.example .env
+    composer install --no-interaction --no-scripts --optimize-autoloader
+    php artisan key:generate
