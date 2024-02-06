@@ -51,14 +51,6 @@ class AuthController extends Controller
     }
      public function getUser(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|string',
-        ]);
-        
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-        $credentials = $request->only('id');
         $token = $request->bearerToken();
         try {
             // Attempt to authenticate the user using the provided token
@@ -68,7 +60,7 @@ class AuthController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'User not found'], 404);
             }
 
-           $userFromDb = User::where('generated_id', $credentials['id'])->first();
+           $userFromDb = User::where('generated_id', $user['generated_id'])->first();
 
             if (!$userFromDb) {
                 return response()->json(['status' => 'error', 'message' => 'User not found'], 404);
