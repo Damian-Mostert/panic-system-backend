@@ -4,6 +4,10 @@ install
 ```
 composer install
 ```
+create jwt secret
+```
+php artisan jwt:secret
+```
 create database tables
 ```
 php artisan migrate
