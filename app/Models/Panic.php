@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,22 +8,24 @@ class Panic extends Model
 {
     use HasFactory;
 
-    protected $table = 'panics';
+    protected $fillable = ['status', 'type', 'details', 'longitude', 'latitude', 'canceled'];
 
-    protected $fillable = ['status', 'data'];
+    // Mutator for the 'data' attribute
+    public function setDataAttribute($value)
+    {
+        $allowedKeys = ['status', 'type', 'details', 'longitude', 'latitude'];
 
-    // Add any additional configuration or relationships here
+        // Filter the input data to include only allowed keys
+        $filteredData = array_intersect_key($value, array_flip($allowedKeys));
+
+        // Encode the filtered data as JSON and set it to the 'data' attribute
+        $this->attributes['data'] = json_encode($filteredData);
+    }
+
+    // Accessor for the 'data' attribute
+    public function getDataAttribute($value)
+    {
+        // Decode the 'data' attribute to get an array
+        return json_decode($value, true);
+    }
 }
-
-/*
-
-CREATE TABLE panics (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    status VARCHAR(255),
-    data JSON,
-    canceled BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-*/
