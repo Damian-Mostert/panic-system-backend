@@ -40,6 +40,7 @@ class AuthController extends Controller
     }
      public function getUser(Request $request)
     {
+        
         $credentials = $request->only('id');
         $token = $request->bearerToken();
         try {
@@ -51,9 +52,9 @@ class AuthController extends Controller
             }
 
             // Verify if the generated ID matches the one associated with the user
-           /* if ($user['generated_id'] !== $credentials['id']) {
+           if ($user['generated_id'] !== $credentials['id']) {
                 return response()->json(['status' => 'error', 'message' => 'Invalid generated ID'], 401);
-            } */
+            }
  
             return response()->json([
                 'status' => 'success',
