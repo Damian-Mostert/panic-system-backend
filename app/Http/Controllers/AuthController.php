@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -11,6 +12,16 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
+
+         $validator = Validator::make($request->all(), [
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|min:8',
+        ]); 
+
+       if ($validator->fails()) {
+             return response()->json(['errors' => $validator->errors()], 422);
+        }
+
         $credentials = $request->only('email', 'password');
 
         // Attempt to authenticate the user using Laravel's authentication
@@ -40,7 +51,13 @@ class AuthController extends Controller
     }
      public function getUser(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|string',
+        ]);
         
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
         $credentials = $request->only('id');
         $token = $request->bearerToken();
         try {
@@ -51,10 +68,13 @@ class AuthController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'User not found'], 404);
             }
 
-            // Verify if the generated ID matches the one associated with the user
-           if ($user['generated_id'] !== $credentials['id']) {
-                return response()->json(['status' => 'error', 'message' => 'Invalid generated ID'], 401);
+           $userFromDb = User::where('generated_id', $credentials['id'])->first();
+
+            if (!$userFromDb) {
+                return response()->json(['status' => 'error', 'message' => 'User not found'], 404);
             }
+            // Verify if the generated ID matches the one associated with the user
+
  
             return response()->json([
                 'status' => 'success',
