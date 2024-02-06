@@ -45,7 +45,7 @@ class PanicController extends Controller
         $data = $request->json()->all();
 
         // Update the status of the specified panic to 'canceled'
-        DB::table('panics')->where('id', $data["id"])->update(['canceled' => $data["canceled"]]);
+        DB::table('panics')->where('id', $data["id"])->update(['canceled' => $data["canceled"],'status' => $data["status"]]);
 
         // Create a JSON response
         $response = [
